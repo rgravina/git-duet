@@ -209,3 +209,15 @@ load test_helper
   assert_failure
   assert_line "your git duet settings are stale"
 }
+
+@test "amend does not add a(nother) signed off line to the commit when amending" {
+  git duet jd fb
+  add_file
+
+  run git duet-commit --amend -m 'override commit message with this string here, ensuring it does not include a signed off by msg'
+
+  EDITOR=: git duet-commit --amend
+
+  run grep 'Signed-off-by' .git/COMMIT_EDITMSG
+  assert_output ''
+}
