@@ -104,6 +104,7 @@ func (gc *GitConfig) SetCommitters(committers ...*Pair) (err error) {
 
 // RotateAuthor flips the committer and author if committer is set
 func (gc *GitConfig) RotateAuthor() (err error) {
+	println("somehow it is still being called, that RotateAuthor")
 	gitConfig := gc
 	if gitConfig.Scope == Default {
 		// find source of configuration
@@ -161,25 +162,30 @@ func (gc *GitConfig) setAuthor(author *Pair) (err error) {
 }
 
 func (gc *GitConfig) setCommitters(committers []*Pair) (err error) {
+	println("setCommitters being called......")
 	var listOfInitials, listOfNames, listOfEmails []string
 	for _, p := range committers {
 		listOfInitials = append(listOfInitials, p.Initials)
 		listOfNames = append(listOfNames, p.Name)
 		listOfEmails = append(listOfEmails, p.Email)
 	}
-
+	fmt.Printf("%v", listOfNames)
+	println("setCommitters 1")
 	if err = gc.setKey("git-committer-initials", strings.Join(listOfInitials, delim)); err != nil {
 		return err
 	}
 
+	println("setCommitters 2")
 	if err = gc.setKey("git-committer-name", strings.Join(listOfNames, delim)); err != nil {
 		return err
 	}
 
+	println("setCommitters 3")
 	if err = gc.setKey("git-committer-email", strings.Join(listOfEmails, delim)); err != nil {
 		return err
 	}
 
+	println("setCommitters 4")
 	return nil
 }
 

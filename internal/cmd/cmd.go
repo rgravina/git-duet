@@ -79,12 +79,22 @@ func (duetcmd Command) Execute() error {
 	}
 
 	var committer *duet.Pair
-	if committers != nil && len(committers) > 0 && duetcmd.Signoff {
-		duetcmd.Args = append([]string{"--signoff"}, duetcmd.Args...)
+	if committers != nil && len(committers) > 0 {
+		if duetcmd.Signoff {
+			duetcmd.Args = append([]string{"--signoff"}, duetcmd.Args...)
+		}
 		committer = committers[0]
 	} else {
 		committer = author
 	}
+
+	//if committers != nil && len(committers) > 0 && duetcmd.Signoff {
+	//	duetcmd.Args = append([]string{"--signoff"}, duetcmd.Args...)
+	//	committer = committers[0]
+	//} else {
+	//	committer = committers[0]
+	//	committer = author
+	//}
 
 	cmd := exec.Command("git", append([]string{duetcmd.Subcommand}, duetcmd.Args...)...)
 	cmd.Stdin = os.Stdin

@@ -108,6 +108,29 @@ load test_helper
   assert_success 'f.bar@hamster.info.local'
 }
 
+@test "GIT_DUET_ROTATE_AUTHOR does not rotate authors or committers when amending" {
+  git duet -q jd fb
+
+  add_file first.txt
+  GIT_DUET_ROTATE_AUTHOR=1 git duet-commit -q -m 'Testing jd as author, fb as committer'
+  run git log -1 --format='%an <%ae>'
+  echo "assert 1"
+  assert_success 'Jane Doe <jane@hamsters.biz.local>'
+  run git log -1 --format='%cn <%ce>'
+  echo "assert 2"
+  assert_success 'Frances Bar <f.bar@hamster.info.local>'
+
+  add_file second.txt
+  GIT_DUET_ROTATE_AUTHOR=1 git duet-commit --amend -q -m 'Testing jd remains author, fb remains committer'
+  run git log -1 --format='%an <%ae>'
+  echo "assert 3"
+  assert_success 'Jane Doe <jane@hamsters.biz.local>'
+  run git log -1 --format='%cn <%ce>'
+  echo "assert 4"
+  assert_success 'Frances Bar <f.bar@hamster.info.local>'
+  echo "assert 5"
+}
+
 @test "does not update mtime when rotating committer" {
   git duet -q jd fb
   git config --unset-all "$GIT_DUET_CONFIG_NAMESPACE.mtime"

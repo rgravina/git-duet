@@ -6,6 +6,7 @@ import (
 )
 
 func Execute(commands ...cmd.Command) error {
+	println("***** executing ***** ")
 	configuration, err := duet.NewConfiguration()
 	if err != nil {
 		return err
@@ -25,17 +26,31 @@ func Execute(commands ...cmd.Command) error {
 		}
 	}
 
+	var amending = false
 	for _, command := range commands {
+		if contains(command.Args, "--amend") {
+			amending = true
+		}
 		if err := command.Execute(); err != nil {
 			return err
 		}
 	}
 
-	if configuration.RotateAuthor {
+	if !amending && configuration.RotateAuthor {
+		println("**** rotating ****")
 		if err := gitConfig.RotateAuthor(); err != nil {
 			return err
 		}
 	}
 
 	return nil
+}
+
+func contains(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
 }
